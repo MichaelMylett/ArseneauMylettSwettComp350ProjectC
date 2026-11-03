@@ -5,6 +5,7 @@ void readSector(char*, int);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 int interrupt(int, int, int, int, int);
 
+void readFile(char*, char*, int*);
 
 int main(){
 
@@ -80,21 +81,21 @@ void readSector(char* buffer, int sector){
 
 void readFile(char* filename, char* buffer, int* sectorsRead) {
     char dir[512];
-    readSector(dir, 2);
     int fileFound = 0;
-
     int fileentry;
+    readSector((char*) dir, 2);
+
     for (fileentry = 0; fileentry < 512; fileentry+=32) {
         if (filename[0]==dir[fileentry+0] && filename[1]==dir[fileentry+1] && filename[2]==dir[fileentry+2] && filename[3]==dir[fileentry+3] && filename[4]==dir[fileentry+4] && filename[5]==dir[fileentry+5]) {
-            fileFound = 1;
+            int fileFound = 1; /* throws error unless int defined for some reason */
 
             int fileSector;
-            for (fileSector = 6; fileSector < fileentry + 32; fileSector++) {
+            for (fileSector = 6; fileSector < 32; fileSector++) {
                 /* iterate through every number listed after the file name that isn't 00 and add to buffer */
                 if (dir[fileentry+fileSector] == 00) {
                     break;
                 } else { /* does this if the directory number is not 00 */
-                    readSector(buffer, dir[fileentry+fileSector]);
+                    readSector((char*) buffer, dir[fileentry+fileSector]);
                     buffer += 512;
                     sectorsRead += 1;
                 }
