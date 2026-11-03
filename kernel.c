@@ -83,13 +83,15 @@ void readFile(char* filename, char* buffer, int* sectorsRead) {
     char dir[512];
     int fileFound = 0;
     int fileentry;
+    int fileSector;
+    *sectorsRead = 0;
     readSector((char*) dir, 2);
 
     for (fileentry = 0; fileentry < 512; fileentry+=32) {
         if (filename[0]==dir[fileentry+0] && filename[1]==dir[fileentry+1] && filename[2]==dir[fileentry+2] && filename[3]==dir[fileentry+3] && filename[4]==dir[fileentry+4] && filename[5]==dir[fileentry+5]) {
-            int fileFound = 1; /* throws error unless int defined for some reason */
+            fileFound = 1; /* throws error unless int defined for some reason */
 
-            int fileSector;
+            /*int fileSector;*/
             for (fileSector = 6; fileSector < 32; fileSector++) {
                 /* iterate through every number listed after the file name that isn't 00 and add to buffer */
                 if (dir[fileentry+fileSector] == 00) {
@@ -97,15 +99,11 @@ void readFile(char* filename, char* buffer, int* sectorsRead) {
                 } else { /* does this if the directory number is not 00 */
                     readSector((char*) buffer, dir[fileentry+fileSector]);
                     buffer += 512;
-                    sectorsRead += 1;
+                    *sectorsRead += 1;
                 }
             }
             break;
         }
-    }
-    if (fileFound == 0) {
-        sectorsRead = 0;
-        /*return;*/
     }
     return;
 }
