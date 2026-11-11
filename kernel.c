@@ -4,30 +4,27 @@ void readString(char*);
 void readSector(char*, int);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 int interrupt(int, int, int, int, int);
-
-
 void readFile(char*, char*, int*);
-void executeProgram(char* name);
+
 int main(){
-
-
-
-/* Step 1 Test */
-char buffer[13312]; /*this is the maximum size of a file*/
-int sectorsRead;
-makeInterupt21();
-interrupt(0x21, 3, "messag", buffer, &sectorsRead); /*read the file into buffer */
-if (sectorsRead>0) {
-    interrupt(0x21, 0, buffer, 0, 0); /*print out the file*/
-} else {
-    interrupt(0x21, 0, "messag not found\r\n", 0, 0); /*no sectors read? then print an error */
-}
-
-/* Step 2 Test */
+/*Project C Step 2 Test*/
+makeInterrupt21();
 interrupt(0x21,4,"tstpr1",0,0);
 
 
+
+/* Project C  Step 1 Test 
+char buffer[13312]; /*this is the maximum size of a file
+int sectorsRead;
+makeInterrupt21();
+interrupt(0x21, 3, "messag", buffer, &sectorsRead); /*read the file into buffer
+if (sectorsRead>0) {
+    interrupt(0x21, 0, buffer, 0, 0); /*print out the file
+} else {
+    interrupt(0x21, 0, "messag not found\r\n", 0, 0); /*no sectors read? then print an error
+}*/
 while(1);
+
 }
 
 /*Step 1*/
@@ -117,21 +114,18 @@ void readFile(char* filename, char* buffer, int* sectorsRead) {
 void executeProgram(char* name){
 	char buffer[13312];
 	int sectorsRead;
-	int i =0;
-	readFile(name,buffer, &sectorsRead);
-	if (sectorsRead == 0) {
+	int i=0;
+	readFile(name, buffer, &sectorsRead);
+	if(sectorsRead ==0){
 		interrupt(0x21,0,"Error: no sectors read\r\n",0,0);
-	} else {
-		
-		while(buffer[i] != 0x0){
+	}else{
+		while(i< sectorsRead*512){
 			putInMemory(0x2000,i, buffer[i]);
+			i++;
 		}
-		launchProgram(0x2000);  
-	}	
-}
-
-
-
+		launchProgram(0x2000);
+	}
+} 
 /* End of Project C */
 
 /*step4 and 5 */
@@ -153,8 +147,7 @@ else if(ax==2){
 else if(ax==3){
     readFile((char*) bx, (char*) cx, (int*) dx);
 }
-else if(ax==4){
+else if(ax>=4){
     executeProgram((char*)bx);
-
-}
+    }
 }
