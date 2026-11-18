@@ -7,17 +7,23 @@ gcc -o loadFile loadFile.c
 as86 -o kernel_asm.o kernel2.asm 
 ld86 -o kernel -d kernel_c.o kernel_asm.o
 
+#compiling shell
+bcc -ansi -c -o shell.o shell.c
+as86 -o userlib.o userlib.asm
+ld86 -d -o shell shell.o userlib.o
 
-bcc -ansi -c -o tstpr1.o  tstpr1.c 
+
+bcc -ansi -c -o tstpr1.o  tstpr1.c
+bcc -ansi -c -o tstpr2.o tstpr2.c 
 as86 -o userlib.o userlib.asm
 ld86 -d -o tstpr1 tstpr1.o userlib.o
-
+ld86 -d -o tstpr2 tstpr2.o userlib.o 
 
 ./loadFile kernel
+./loadFile shell
 ./loadFile message.txt
-
-
 ./loadFile tstpr1
+./loadFile tstpr2
 java -jar ~/Downloads/simulator.jar
 
 

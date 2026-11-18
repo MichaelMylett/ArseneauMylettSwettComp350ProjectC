@@ -5,13 +5,16 @@ void readSector(char*, int);
 void handleInterrupt21(int ax, int bx, int cx, int dx);
 int interrupt(int, int, int, int, int);
 void readFile(char*, char*, int*);
-
+void terminate(char*);
 int main(){
-/*Project C Step 2 Test*/
+/*Project C Step 2 Test
 makeInterrupt21();
+/*
 interrupt(0x21,4,"tstpr1",0,0);
 
+/*Project C step 3 test
 
+interrupt(0x21,4,"tstpr2",0,0);
 
 /* Project C  Step 1 Test 
 char buffer[13312]; /*this is the maximum size of a file
@@ -23,6 +26,11 @@ if (sectorsRead>0) {
 } else {
     interrupt(0x21, 0, "messag not found\r\n", 0, 0); /*no sectors read? then print an error
 }*/
+
+/*Step 4 Test*/
+makeInterrupt21();
+interrupt(0x21,4,"shell",0,0);
+
 while(1);
 
 }
@@ -125,14 +133,29 @@ void executeProgram(char* name){
 		}
 		launchProgram(0x2000);
 	}
-} 
+}
+
+
+/*Step 3 */ 
+void terminate(char* name){
+	char* shellname[6];
+	shellname[0] = 's';
+	shellname[1] = 'h';
+	shellname[2] = 'e';
+	shellname[3] = 'l';
+	shellname[4] = 'l';
+	shellname[5] = '\0';
+    
+ executeProgram(shellname);
+ 
+}
+
+
+ 
 /* End of Project C */
 
 /*step4 and 5 */
 void handleInterrupt21(int ax, int bx, int cx, int dx){
-
-
-//char* bxString= (char*)bx; /* (char*)bx converts the int value of bx into a char*/
 
 if(ax==0){
 
@@ -147,7 +170,12 @@ else if(ax==2){
 else if(ax==3){
     readFile((char*) bx, (char*) cx, (int*) dx);
 }
-else if(ax>=4){
+else if(ax==4){
     executeProgram((char*)bx);
     }
+else if( ax==5){
+	terminate((char*)bx);
+	}
 }
+
+
